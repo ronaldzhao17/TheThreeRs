@@ -10,7 +10,7 @@ if multiprocessing.current_process().name == "MainProcess":
 class TrashModel(nn.Module):
     def __init__(self, num_classes):
         super(TrashModel, self).__init__()
-        self.base_model = models.resnet34(weights=models.ResNet34_Weights.IMAGENET1K_V1)
+        self.base_model = models.resnet34()
         # Replace the final fully-connected layer with one that outputs num_classes scores
         self.base_model.fc = nn.Linear(self.base_model.fc.in_features, num_classes)
     
