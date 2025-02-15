@@ -13,7 +13,6 @@ class TrashModel(nn.Module):
         self.base_model = models.resnet34(weights=models.ResNet34_Weights.IMAGENET1K_V1)
         # Replace the final fully-connected layer with one that outputs num_classes scores
         self.base_model.fc = nn.Linear(self.base_model.fc.in_features, num_classes)
-        print ("hi")
     
     def forward(self, x):
         return self.base_model(x)

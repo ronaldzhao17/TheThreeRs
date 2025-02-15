@@ -97,5 +97,7 @@ if __name__ == "__main__":
     
     print("Training Completed! 🎉")
 
+    torch.save(model.state_dict(), "trash_model.pth")
+
 
 
