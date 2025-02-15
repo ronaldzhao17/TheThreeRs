@@ -1,11 +1,13 @@
 # app.py
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import torch
 from torchvision import transforms
 from PIL import Image
 import io
 
 app = Flask(__name__)
+cors = CORS(app, resources={r"/predict": {"origins": "http://localhost:3000"}})
 
 # List of trash types (order must match the model's output order)
 trash_types = [
@@ -39,7 +41,8 @@ trash_to_bin = {
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Import your model and number of classes from trash_model.py
-from trash_model import TrashModel, num_classes
+from trash_model import TrashModel
+from dataset import num_classes
 
 # Initialize and load the model weights (assumes weights saved in 'trash_model.pth')
 model = TrashModel(num_classes)
