@@ -1,22 +1,20 @@
 import torch
 import torch.nn as nn
-import torch.optim as optim
 from torchvision import models
-#from dataset import CLASSES
+import multiprocessing
 
-# Define number of classes based on the dataset
-# num_classes = len(CLASSES)  # Get number of categories from dataset
-num_classes = 16
+# Only print in the main process
+if multiprocessing.current_process().name == "MainProcess":
+    print("loaded model")
 
 class TrashModel(nn.Module):
     def __init__(self, num_classes):
-        super().__init__()
-        self.model = models.resnet34(pretrained=True)
-        self.model.fc = nn.Linear(self.model.fc.in_features, num_classes)
+        super(TrashModel, self).__init__()
+        self.base_model = models.resnet34(weights=models.ResNet34_Weights.IMAGENET1K_V1)
+        # Replace the final fully-connected layer with one that outputs num_classes scores
+        self.base_model.fc = nn.Linear(self.base_model.fc.in_features, num_classes)
+        print ("hi")
     
     def forward(self, x):
-        return self.model.forward(x)
+        return self.base_model(x)
 
-
-# Print Model Summary
-print("loaded model")
