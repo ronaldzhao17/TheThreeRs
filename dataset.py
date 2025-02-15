@@ -36,10 +36,11 @@ train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True, num_worker
 test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False, num_workers=2)
 
 # Print some dataset details
-print(f"Number of classes: {len(dataset.classes)}")
-print(f"Training samples: {len(train_dataset)}, Testing samples: {len(test_dataset)}")
+print("loaded dataset")
+# print(f"Number of classes: {len(dataset.classes)}")
+# print(f"Training samples: {len(train_dataset)}, Testing samples: {len(test_dataset)}")
 
-# Display class names
-print("Class names:", dataset.classes)
+# # Display class names
+# print("Class names:", dataset.classes)
 
 #CLASSES = dataset.classes
