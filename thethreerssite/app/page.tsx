@@ -3,14 +3,21 @@
 import { useState, useRef, useCallback } from "react"
 import Webcam from "react-webcam"
 import { Button } from "@/components/ui/button"
-import { MapIcon, Camera, RefreshCw } from 'lucide-react'
+import { MapIcon, Camera, RefreshCw } from "lucide-react"
 
 const mirrorClass = "scale-x-[-1]"
+
+interface ClassificationResult {
+  trash_type: string
+  disposal_bin: string
+}
 
 export default function TrashClassification() {
   const webcamRef = useRef<Webcam>(null)
   const [capturedImage, setCapturedImage] = useState<string | null>(null)
   const [isCapturing, setIsCapturing] = useState(true)
+  const [classificationResult, setClassificationResult] = useState<ClassificationResult | null>(null)
+  const [isClassifying, setIsClassifying] = useState(false)
 
   const capture = useCallback(() => {
     if (isCapturing) {
@@ -19,25 +26,58 @@ export default function TrashClassification() {
         // Create a new image to flip horizontally
         const img = new Image()
         img.onload = () => {
-          const canvas = document.createElement('canvas')
+          const canvas = document.createElement("canvas")
           canvas.width = img.width
           canvas.height = img.height
-          const ctx = canvas.getContext('2d')
+          const ctx = canvas.getContext("2d")
           if (ctx) {
             ctx.scale(-1, 1) // Flip horizontally
             ctx.drawImage(img, -img.width, 0)
-            setCapturedImage(canvas.toDataURL())
+            const mirroredImageSrc = canvas.toDataURL()
+            setCapturedImage(mirroredImageSrc)
+            setIsCapturing(false)
+            classifyImage(mirroredImageSrc)
           }
-          setIsCapturing(false)
-          console.log("Image captured and mirrored. Ready for classification.")
         }
         img.src = imageSrc
       }
     } else {
       setCapturedImage(null)
+      setClassificationResult(null)
       setIsCapturing(true)
     }
   }, [isCapturing])
+
+  const classifyImage = async (imageSrc: string) => {
+    setIsClassifying(true)
+    try {
+      // Convert base64 to blob
+      const response = await fetch(imageSrc)
+      const blob = await response.blob()
+
+      // Create FormData and append the file
+      const formData = new FormData()
+      formData.append("file", blob, "image.jpg")
+
+      // Send POST request
+      const classificationResponse = await fetch("http://127.0.0.1:5000/predict", {
+        method: "POST",
+        body: formData,
+      })
+
+      if (!classificationResponse.ok) {
+        throw new Error("Classification request failed")
+      }
+
+      const result: ClassificationResult = await classificationResponse.json()
+      setClassificationResult(result)
+    } catch (error) {
+      console.error("Error classifying image:", error)
+      setClassificationResult(null)
+    } finally {
+      setIsClassifying(false)
+    }
+  }
 
   return (
     <div className="container mx-auto p-4">
@@ -61,7 +101,7 @@ export default function TrashClassification() {
               />
             )}
           </div>
-          <Button onClick={capture} className="mt-2 w-full">
+          <Button onClick={capture} className="mt-2 w-full" disabled={isClassifying}>
             {isCapturing ? (
               <>
                 <Camera className="mr-2 h-4 w-4" /> Capture Image
@@ -88,7 +128,20 @@ export default function TrashClassification() {
       {capturedImage && !isCapturing && (
         <div className="mt-4">
           <h2 className="text-xl font-semibold mb-2">Classification Result</h2>
-          <p className="text-gray-600">Classification results will appear here after processing the image.</p>
+          {isClassifying ? (
+            <p className="text-gray-600">Classifying image...</p>
+          ) : classificationResult ? (
+            <div className="bg-white p-4 rounded-lg shadow">
+              <p className="text-gray-800">
+                <strong>Trash Type:</strong> {classificationResult.trash_type}
+              </p>
+              <p className="text-gray-800">
+                <strong>Disposal Bin:</strong> {classificationResult.disposal_bin}
+              </p>
+            </div>
+          ) : (
+            <p className="text-gray-600">Failed to classify image. Please try again.</p>
+          )}
         </div>
       )}
     </div>
