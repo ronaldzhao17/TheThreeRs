@@ -20,7 +20,7 @@ transform = transforms.Compose([
 ])
 
 # Load a test image (replace 'test.jpg' with your image file)
-test_image_path = "faces.jpg"
+test_image_path = "image.jpg"
 try:
     image = Image.open(test_image_path).convert("RGB")
 except Exception as e:
