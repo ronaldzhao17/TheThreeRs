@@ -79,6 +79,19 @@ export default function TrashClassification() {
     }
   }
 
+  const getBinImage = (disposalBin: string) => {
+    switch (disposalBin.toLowerCase()) {
+      case "recycling":
+        return "/bluebin.jpg"
+      case "organic":
+        return "/greenbin.jpg"
+      case "landfill":
+        return "/graybin.jpg"
+      default:
+        return "/placeholder.svg"
+    }
+  }
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Trash Classification System</h1>
@@ -119,10 +132,22 @@ export default function TrashClassification() {
           </p>
         </div>
         <div className="flex-1">
-          <div className="bg-gray-200 rounded-lg aspect-video flex items-center justify-center">
-            <MapIcon className="h-16 w-16 text-gray-400" />
+          <div className="bg-gray-200 rounded-lg aspect-video flex items-center justify-center overflow-hidden">
+            {classificationResult ? (
+              <img
+                src={getBinImage(classificationResult.disposal_bin) || "/placeholder.svg"}
+                alt={`${classificationResult.disposal_bin} bin`}
+                className="object-cover w-full h-full"
+              />
+            ) : (
+              <MapIcon className="h-16 w-16 text-gray-400" />
+            )}
           </div>
-          <p className="mt-2 text-center text-sm text-gray-600">Map placeholder. Will show nearby recycling centers.</p>
+          <p className="mt-2 text-center text-sm text-gray-600">
+            {classificationResult
+              ? `Disposal Bin: ${classificationResult.disposal_bin}`
+              : "Map placeholder. Will show nearby recycling centers."}
+          </p>
         </div>
       </div>
       {capturedImage && !isCapturing && (
