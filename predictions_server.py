@@ -1,48 +1,38 @@
 # app.py
 from flask import Flask, request, jsonify
-from flask_cors import CORS
 import torch
 from torchvision import transforms
 from PIL import Image
 import io
 
 app = Flask(__name__)
-cors = CORS(app, resources={r"/predict": {"origins": "http://localhost:3000"}})
 
-# List of trash types (order must match the model's output order)
+# Updated list of trash classes (order must match the model's output order)
 trash_types = [
-    'Brown box', 'Chopstick Covers', 'Chopsticks', 'Foil', 'Food',
-    'Paper Bowl', 'Paper Bowl Small', 'Paper Bowl Square', 'Plastic Cover',
-    'Plastic Cup', 'Plastic Lid', 'Plastic Utensil', 'Sauce Cup',
-    'Sauce Packets', 'Straw', 'Tissue Paper'
+    'Brown box', 'Chopsticks', 'Foil', 'Food', 'Paper', 'Paper Bowl',
+    'Plastic Container', 'Plastic Packets', 'Plastic Utensil', 'Plastic Wrap', 'Straw'
 ]
 
-# Map each trash type to the proper disposal bin
+# Updated mapping from trash type to disposal bin
 trash_to_bin = {
     'Brown box': 'recycling',
-    'Chopstick Covers': 'landfill',
     'Chopsticks': 'recycling',
     'Foil': 'landfill',
     'Food': 'organic material',
+    'Paper': 'recycling',
     'Paper Bowl': 'recycling',
-    'Paper Bowl Small': 'recycling',
-    'Paper Bowl Square': 'recycling',
-    'Plastic Cover': 'recycling',
-    'Plastic Cup': 'recycling',
-    'Plastic Lid': 'recycling',
+    'Plastic Container': 'recycling',
+    'Plastic Packets': 'landfill',
     'Plastic Utensil': 'landfill',
-    'Sauce Cup': 'recycling',
-    'Sauce Packets': 'landfill',
-    'Straw': 'landfill',
-    'Tissue Paper': 'organic material'
+    'Plastic Wrap': 'landfill',
+    'Straw': 'landfill'
 }
 
-# Set up device
+# Device setup
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Import your model and number of classes from trash_model.py
-from trash_model import TrashModel
-from dataset import num_classes
+from trash_model import TrashModel, num_classes
 
 # Initialize and load the model weights (assumes weights saved in 'trash_model.pth')
 model = TrashModel(num_classes)
@@ -50,7 +40,7 @@ model.load_state_dict(torch.load("trash_model.pth", map_location=device))
 model.to(device)
 model.eval()
 
-# Define the same image transform as used during training
+# Define the image transformation (must match training transforms)
 transform = transforms.Compose([
     transforms.Resize((224, 224)),
     transforms.ToTensor(),
@@ -81,7 +71,7 @@ def predict():
         output = model(input_tensor)
         predicted_idx = output.argmax(dim=1).item()
 
-    # Retrieve trash type and disposal bin
+    # Retrieve trash type and disposal bin from updated lists
     trash_type = trash_types[predicted_idx]
     disposal_bin = trash_to_bin.get(trash_type, "Unknown")
 
