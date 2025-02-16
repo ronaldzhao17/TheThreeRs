@@ -32,7 +32,8 @@ trash_to_bin = {
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Import your model and number of classes from trash_model.py
-from trash_model import TrashModel, num_classes
+from trash_model import TrashModel
+from dataset import num_classes
 
 # Initialize and load the model weights (assumes weights saved in 'trash_model.pth')
 model = TrashModel(num_classes)
