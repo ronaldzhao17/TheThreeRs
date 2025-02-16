@@ -11,7 +11,7 @@ if __name__ == "__main__":
     
     # Import after setting the start method
     from trash_model import TrashModel
-    from dataset import train_loader, test_loader, num_classes
+    from dataset import classes, train_loader, test_loader, num_classes
 
     # Define device before initializing model
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -99,5 +99,37 @@ if __name__ == "__main__":
 
     torch.save(model.state_dict(), "trash_model.pth")
 
+    # -----------------------
+    # Compute and Display Confusion Matrix
+    # -----------------------
+    from sklearn.metrics import confusion_matrix
+    import seaborn as sns
+    import matplotlib.pyplot as plt
 
+    model.eval()
+    all_preds = []
+    all_labels = []
+    
+    with torch.no_grad():
+        for inputs, labels in test_loader:
+            inputs, labels = inputs.to(device), labels.to(device)
+            outputs = model(inputs)
+            _, preds = torch.max(outputs, 1)
+            all_preds.extend(preds.cpu().numpy())
+            all_labels.extend(labels.cpu().numpy())
+    
+    # Compute the confusion matrix
+    cm = confusion_matrix(all_labels, all_preds)
+    print("Confusion Matrix:")
+    print(cm)
+    
+    # Plot confusion matrix using seaborn
+    plt.figure(figsize=(10,8))
+    sns.heatmap(cm, annot=True, fmt="d", cmap=plt.cm.Blues,
+                xticklabels=[classes[i] for i in range(num_classes)],
+                yticklabels=[classes[i] for i in range(num_classes)])
+    plt.xlabel("Predicted Label")
+    plt.ylabel("True Label")
+    plt.title("Confusion Matrix")
+    plt.show()
 

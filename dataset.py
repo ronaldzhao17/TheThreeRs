@@ -26,6 +26,7 @@ test_transforms = transforms.Compose([
 dataset = datasets.ImageFolder(root="data", transform=train_transforms)
 
 # Save the number of classes based on the dataset
+classes = dataset.classes
 num_classes = len(dataset.classes)
 
 # Split dataset into training (80%) and testing (20%)
