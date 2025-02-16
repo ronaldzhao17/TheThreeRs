@@ -94,7 +94,7 @@ export default function TrashClassification() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Trash Classification System</h1>
+      <h1 className="text-2xl font-bold mb-4">TheThreeR's Trash Classification System</h1>
       <div className="flex flex-col md:flex-row gap-4">
         <div className="flex-1">
           <div className="relative aspect-video">
@@ -146,15 +146,15 @@ export default function TrashClassification() {
           <p className="mt-2 text-center text-sm text-gray-600">
             {classificationResult
               ? `Disposal Bin: ${classificationResult.disposal_bin}`
-              : "Map placeholder. Will show nearby recycling centers."}
+              : "After you have captured an image, the system will identify the correct bin to dispose of your trash."}
           </p>
         </div>
       </div>
       {capturedImage && !isCapturing && (
         <div className="mt-4">
-          <h2 className="text-xl font-semibold mb-2">Classification Result</h2>
+          <h2 className="text-xl font-semibold mb-2">Sorting Result</h2>
           {isClassifying ? (
-            <p className="text-gray-600">Classifying image...</p>
+            <p className="text-gray-600">Sorting trash...</p>
           ) : classificationResult ? (
             <div className="bg-white p-4 rounded-lg shadow">
               <p className="text-gray-800">
