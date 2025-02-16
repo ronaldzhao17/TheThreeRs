@@ -1,11 +1,13 @@
 # app.py
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import torch
 from torchvision import transforms
 from PIL import Image
 import io
 
 app = Flask(__name__)
+cors = CORS(app, resources={r"/predict": {"origins": "http://localhost:3000"}})
 
 # Updated list of trash classes (order must match the model's output order)
 trash_types = [
