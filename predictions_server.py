@@ -20,7 +20,7 @@ trash_to_bin = {
     'Brown box': 'recycling',
     'Chopsticks': 'recycling',
     'Foil': 'landfill',
-    'Food': 'organic material',
+    'Food': 'organic',
     'Paper': 'recycling',
     'Paper Bowl': 'recycling',
     'Plastic Container': 'recycling',
