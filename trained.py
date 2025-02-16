@@ -22,37 +22,7 @@ if __name__ == "__main__":
     # Define Loss Function and Optimizer
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
-
-    # # Learning Rate Finder Function
-    # def find_lr(model, train_loader, criterion, optimizer, start_lr=1e-6, end_lr=10, num_iters=100):
-    #     model.train()
-    #     lrs = torch.logspace(start=torch.log10(torch.tensor(start_lr)),
-    #                          end=torch.log10(torch.tensor(end_lr)),
-    #                          steps=num_iters).tolist()
-    #     losses = []
-    #     best_loss = float('inf')
     
-    #     for i, (inputs, labels) in enumerate(train_loader):
-    #         if i >= num_iters:
-    #             break
-    #         inputs, labels = inputs.to(device), labels.to(device)
-    #         optimizer.param_groups[0]['lr'] = lrs[i]
-    #         optimizer.zero_grad()
-    #         outputs = model(inputs)
-    #         loss = criterion(outputs, labels)
-    #         loss.backward()
-    #         optimizer.step()
-    #         losses.append(loss.item())
-    #         if loss.item() < best_loss:
-    #             best_loss = loss.item()
-    
-    #     return lrs, losses
-
-    # print("Running Learning Rate Finder...")
-    # lrs, losses = find_lr(model, train_loader, criterion, optimizer)
-    # print("LR Finder Completed!")
-
-    # Reinitialize model & optimizer after LR Finder so that LR Finder does not affect training.
     model = TrashModel(num_classes).to(device)
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
