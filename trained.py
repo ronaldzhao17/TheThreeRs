@@ -23,34 +23,34 @@ if __name__ == "__main__":
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-    # Learning Rate Finder Function
-    def find_lr(model, train_loader, criterion, optimizer, start_lr=1e-6, end_lr=10, num_iters=100):
-        model.train()
-        lrs = torch.logspace(start=torch.log10(torch.tensor(start_lr)),
-                             end=torch.log10(torch.tensor(end_lr)),
-                             steps=num_iters).tolist()
-        losses = []
-        best_loss = float('inf')
+    # # Learning Rate Finder Function
+    # def find_lr(model, train_loader, criterion, optimizer, start_lr=1e-6, end_lr=10, num_iters=100):
+    #     model.train()
+    #     lrs = torch.logspace(start=torch.log10(torch.tensor(start_lr)),
+    #                          end=torch.log10(torch.tensor(end_lr)),
+    #                          steps=num_iters).tolist()
+    #     losses = []
+    #     best_loss = float('inf')
     
-        for i, (inputs, labels) in enumerate(train_loader):
-            if i >= num_iters:
-                break
-            inputs, labels = inputs.to(device), labels.to(device)
-            optimizer.param_groups[0]['lr'] = lrs[i]
-            optimizer.zero_grad()
-            outputs = model(inputs)
-            loss = criterion(outputs, labels)
-            loss.backward()
-            optimizer.step()
-            losses.append(loss.item())
-            if loss.item() < best_loss:
-                best_loss = loss.item()
+    #     for i, (inputs, labels) in enumerate(train_loader):
+    #         if i >= num_iters:
+    #             break
+    #         inputs, labels = inputs.to(device), labels.to(device)
+    #         optimizer.param_groups[0]['lr'] = lrs[i]
+    #         optimizer.zero_grad()
+    #         outputs = model(inputs)
+    #         loss = criterion(outputs, labels)
+    #         loss.backward()
+    #         optimizer.step()
+    #         losses.append(loss.item())
+    #         if loss.item() < best_loss:
+    #             best_loss = loss.item()
     
-        return lrs, losses
+    #     return lrs, losses
 
-    print("Running Learning Rate Finder...")
-    lrs, losses = find_lr(model, train_loader, criterion, optimizer)
-    print("LR Finder Completed!")
+    # print("Running Learning Rate Finder...")
+    # lrs, losses = find_lr(model, train_loader, criterion, optimizer)
+    # print("LR Finder Completed!")
 
     # Reinitialize model & optimizer after LR Finder so that LR Finder does not affect training.
     model = TrashModel(num_classes).to(device)
@@ -58,7 +58,7 @@ if __name__ == "__main__":
 
     # Define One-Cycle Learning Rate Scheduler
     max_lr = 5e-3
-    epochs = 20
+    epochs = 35
     scheduler = lr_scheduler.OneCycleLR(optimizer, max_lr=max_lr, 
                                         steps_per_epoch=len(train_loader),
                                         epochs=epochs)

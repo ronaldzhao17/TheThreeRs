@@ -7,13 +7,17 @@ import multiprocessing
 if multiprocessing.current_process().name == "MainProcess":
     print("loaded dataset")
 
-# Define transforms for training and testing
+# Define transforms for training and testing with additional augmentations for training
 train_transforms = transforms.Compose([
-    transforms.Resize((224, 224)),
-    transforms.RandomHorizontalFlip(),
-    transforms.RandomRotation(10),
-    transforms.ToTensor(),
-    transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+    transforms.Resize((256, 256)),                   # Resize to a larger size first
+    transforms.RandomResizedCrop(224),               # Randomly crop to 224x224
+    transforms.RandomHorizontalFlip(),               # Randomly flip horizontally
+    transforms.RandomRotation(15),                   # Increase rotation range to 15 degrees
+    transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.1),  # Adjust brightness, contrast, etc.
+    transforms.RandomAffine(degrees=0, translate=(0.1, 0.1)),  # Slight translation
+    transforms.ToTensor(),                           # Convert image to tensor
+    transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),  # Normalize
+    transforms.RandomErasing(p=0.5, scale=(0.02, 0.1))  # Randomly erase parts of the image
 ])
 
 test_transforms = transforms.Compose([
@@ -22,12 +26,12 @@ test_transforms = transforms.Compose([
     transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
 ])
 
-# Load the dataset
+# Load the dataset with the training transforms
 dataset = datasets.ImageFolder(root="data", transform=train_transforms)
 
 # Save the number of classes based on the dataset
 classes = dataset.classes
-num_classes = len(dataset.classes)
+num_classes = len(classes)
 
 # Split dataset into training (80%) and testing (20%)
 train_size = int(0.8 * len(dataset))
